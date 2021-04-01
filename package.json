@@ -29,6 +29,6 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "scandit-react-native-datacapture-core": "link:../scandit-react-native-datacapture-core"
+    "scandit-react-native-datacapture-core": "6.7.1"
   }
 }
