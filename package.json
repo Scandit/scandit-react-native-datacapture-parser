@@ -1,10 +1,9 @@
 {
   "name": "scandit-react-native-datacapture-parser",
-  "version": "6.7.1",
+  "version": "6.6.4",
   "description": "Scandit Data Capture SDK for React Native",
   "homepage": "https://github.com/Scandit/scandit-react-native-datacapture-core",
-  "main": "js/index.js",
-  "types": "js/index.d.ts",
+  "main": "index.js",
   "scripts": {
     "test": "yarn lint",
     "lint": "tslint --project .",
