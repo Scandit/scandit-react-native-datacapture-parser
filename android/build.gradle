@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    def sdk_version = "6.12.0"
+    def sdk_version = "6.12.1"
 
     api project(path: ':scandit-react-native-datacapture-core')
     api "com.scandit.datacapture:parser:$sdk_version"
