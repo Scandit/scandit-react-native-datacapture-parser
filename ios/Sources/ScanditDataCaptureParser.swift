@@ -38,7 +38,7 @@ class ScanditDataCaptureParser: RCTEventEmitter {
     }
 
     @objc override class func requiresMainQueueSetup() -> Bool {
-        return false
+        return true
     }
 
     @objc override var methodQueue: DispatchQueue! {
