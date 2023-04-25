@@ -42,7 +42,7 @@ class ScanditDataCaptureParser: RCTEventEmitter {
     }
 
     @objc override var methodQueue: DispatchQueue! {
-        return SDCSharedMethodQeueue
+        return sdcSharedMethodQueue
     }
 
     override func supportedEvents() -> [String]! {

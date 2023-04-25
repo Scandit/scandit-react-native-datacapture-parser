@@ -20,12 +20,13 @@ extension ScanditDataCaptureParser {
 extension ScanditDataCaptureParser: ParserDeserializerDelegate {
     func parserDeserializer(_ parserDeserializer: ParserDeserializer,
                             didStartDeserializingParser parser: Parser,
-                            from JSONValue: JSONValue) {
+                            from jsonValue: JSONValue) {
+        // Empty on purpose
     }
 
     func parserDeserializer(_ parserDeserializer: ParserDeserializer,
                             didFinishDeserializingParser parser: Parser,
-                            from JSONValue: JSONValue) {
+                            from jsonValue: JSONValue) {
         parsers[parser.componentId] = parser
     }
 }
