@@ -53,14 +53,13 @@ class ScanditDataCaptureParserModule(
         DeserializationLifecycleObserver.attach(this)
     }
 
-    override fun invalidate() {
+    override fun onCatalystInstanceDestroy() {
         DeserializationLifecycleObserver.detach(this)
 
         Deserializers.Factory.removeComponentDeserializer(parserDeserializer)
         parserDeserializer.listener = null
 
         parsers.clear()
-        super.invalidate()
     }
 
     @ReactMethod
