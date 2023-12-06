@@ -10,5 +10,5 @@ var ParserDataFormat;
     ParserDataFormat["SwissQR"] = "swissQr";
     ParserDataFormat["VIN"] = "vin";
     ParserDataFormat["UsUsid"] = "usUsid";
-})(ParserDataFormat || (exports.ParserDataFormat = ParserDataFormat = {}));
+})(ParserDataFormat = exports.ParserDataFormat || (exports.ParserDataFormat = {}));
 //# sourceMappingURL=ParserDataFormat.js.map

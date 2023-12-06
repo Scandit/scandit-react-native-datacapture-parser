@@ -4,7 +4,6 @@
  * Copyright (C) 2020- Scandit AG. All rights reserved.
  */
 
-import React
 import ScanditParser
 import ScanditDataCaptureCore
 
