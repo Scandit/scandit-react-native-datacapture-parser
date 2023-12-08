@@ -10,11 +10,11 @@ import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import com.facebook.react.bridge.*
 import com.scandit.datacapture.core.json.JsonValue
+import com.scandit.datacapture.frameworks.core.deserialization.DeserializationLifecycleObserver
+import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
 import com.scandit.datacapture.parser.Parser
 import com.scandit.datacapture.parser.serialization.ParserDeserializer
 import com.scandit.datacapture.parser.serialization.ParserDeserializerListener
-import com.scandit.datacapture.reactnative.core.deserializers.Deserializers
-import com.scandit.datacapture.reactnative.core.deserializers.TreeLifecycleObserver
 import com.scandit.datacapture.reactnative.core.utils.Error
 import com.scandit.datacapture.reactnative.core.utils.reject
 
@@ -25,7 +25,7 @@ class ScanditDataCaptureParserModule(
     private val parserDeserializer: ParserDeserializer = ParserDeserializer()
 ) : ReactContextBaseJavaModule(reactContext),
     ParserDeserializerListener,
-    TreeLifecycleObserver.Callbacks {
+    DeserializationLifecycleObserver.Observer {
     companion object {
         private const val DEFAULTS_KEY = "Defaults"
 
@@ -50,16 +50,17 @@ class ScanditDataCaptureParserModule(
         parserDeserializer.listener = this
         Deserializers.Factory.addComponentDeserializer(parserDeserializer)
 
-        TreeLifecycleObserver.callbacks += this
+        DeserializationLifecycleObserver.attach(this)
     }
 
-    override fun onCatalystInstanceDestroy() {
-        TreeLifecycleObserver.callbacks -= this
+    override fun invalidate() {
+        DeserializationLifecycleObserver.detach(this)
 
         Deserializers.Factory.removeComponentDeserializer(parserDeserializer)
         parserDeserializer.listener = null
 
-        onTreeDestroyed()
+        parsers.clear()
+        super.invalidate()
     }
 
     @ReactMethod
@@ -117,7 +118,7 @@ class ScanditDataCaptureParserModule(
         parsers[parser.id] = parser
     }
 
-    override fun onTreeDestroyed() {
+    override fun onDataCaptureContextDisposed() {
         parsers.clear()
     }
 

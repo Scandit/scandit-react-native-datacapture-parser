@@ -1,5 +1,5 @@
-import { DataCaptureComponent, DataCaptureContext } from 'scandit-react-native-datacapture-core/js/DataCaptureContext';
-import { DefaultSerializeable } from 'scandit-react-native-datacapture-core/js/private/Serializeable';
+import { DataCaptureComponent, DataCaptureContext } from 'scandit-react-native-datacapture-core';
+import { DefaultSerializeable } from 'scandit-datacapture-frameworks-core';
 import { ParsedData } from './ParsedData';
 import { ParserDataFormat } from './ParserDataFormat';
 export declare class Parser extends DefaultSerializeable implements DataCaptureComponent {

@@ -4,6 +4,7 @@
  * Copyright (C) 2020- Scandit AG. All rights reserved.
  */
 
+import React
 import ScanditParser
 import ScanditDataCaptureCore
 
@@ -52,6 +53,8 @@ class ScanditDataCaptureParser: RCTEventEmitter {
     override func constantsToExport() -> [AnyHashable: Any]! {
         return [:]
     }
+
+    internal let parserDeserializer = ParserDeserializer()
 
     var parsers = [String: Parser]()
     func parser(with id: String) -> Parser? {
@@ -102,5 +105,11 @@ class ScanditDataCaptureParser: RCTEventEmitter {
         } catch let error as NSError {
             reject(String(error.code), error.localizedDescription, error)
         }
+    }
+
+    @objc override func invalidate() {
+        super.invalidate()
+        parsers.removeAll()
+        unregisterDeserializer()
     }
 }
