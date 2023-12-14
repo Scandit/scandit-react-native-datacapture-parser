@@ -54,8 +54,6 @@ class ScanditDataCaptureParser: RCTEventEmitter {
         return [:]
     }
 
-    internal let parserDeserializer = ParserDeserializer()
-
     var parsers = [String: Parser]()
     func parser(with id: String) -> Parser? {
         defer {
@@ -105,11 +103,5 @@ class ScanditDataCaptureParser: RCTEventEmitter {
         } catch let error as NSError {
             reject(String(error.code), error.localizedDescription, error)
         }
-    }
-
-    @objc override func invalidate() {
-        super.invalidate()
-        parsers.removeAll()
-        unregisterDeserializer()
     }
 }
