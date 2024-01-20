@@ -10,10 +10,13 @@ import ScanditDataCaptureCore
 
 extension ScanditDataCaptureParser {
     func registerDeserializer() {
-        let parserDeserializer = ParserDeserializer()
         parserDeserializer.delegate = self
-
         ScanditDataCaptureCore.register(componentDeserializer: parserDeserializer)
+    }
+    
+    func unregisterDeserializer() {
+        parserDeserializer.delegate = nil
+        ScanditDataCaptureCore.unregister(componentDeserializer: parserDeserializer)
     }
 }
 
