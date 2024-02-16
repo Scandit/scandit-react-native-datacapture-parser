@@ -5,5 +5,7 @@ export declare class ParserProxy {
     static forParser(parser: Parser): ParserProxy;
     parseString(data: string): Promise<ParsedData>;
     parseRawData(data: string): Promise<ParsedData>;
+    createUpdateNativeInstance(): Promise<void>;
+    disposeParser(): Promise<void>;
 }
 export {};

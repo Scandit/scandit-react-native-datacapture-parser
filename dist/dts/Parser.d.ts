@@ -17,4 +17,5 @@ export declare class Parser extends DefaultSerializeable implements DataCaptureC
     }): Promise<void>;
     parseString(data: string): Promise<ParsedData>;
     parseRawData(data: string): Promise<ParsedData>;
+    dispose(): void;
 }
