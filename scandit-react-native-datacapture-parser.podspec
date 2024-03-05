@@ -2,11 +2,9 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
-version = package["version"]
-
 Pod::Spec.new do |s|
   s.name                    = package["name"]
-  s.version                 = version
+  s.version                 = package["version"]
   s.summary                 = package["description"]
   s.homepage                = package["homepage"]
   s.license                 = package["license"]
@@ -18,9 +16,9 @@ Pod::Spec.new do |s|
   s.requires_arc            = true
   s.module_name             = "ScanditDataCaptureParser"
   s.header_dir              = "ScanditDataCaptureParser"
+  s.dependency 'ScanditParser', '= 6.21.3'
 
   s.dependency "React"
-  s.dependency "scandit-react-native-datacapture-core", "= #{version}"
-  s.dependency "scandit-datacapture-frameworks-parser", '= 6.22.0'
+  s.dependency "scandit-react-native-datacapture-core"
 end
 

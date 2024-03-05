@@ -103,12 +103,6 @@ class ParserProxy {
         return NativeModule.parseRawData(this.parser.id, data)
             .then((parsedData) => ParsedData.fromJSON(JSON.parse(parsedData)));
     }
-    createUpdateNativeInstance() {
-        return NativeModule.createUpdateNativeInstance(JSON.stringify(this.parser.toJSON()));
-    }
-    disposeParser() {
-        return NativeModule.disposeParser(this.parser.id);
-    }
 }
 
 class Parser extends DefaultSerializeable {
@@ -124,7 +118,7 @@ class Parser extends DefaultSerializeable {
     static forContextAndFormat(context, dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
-        const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
+        const promise = context.addComponent(parser).then(() => Promise.resolve(parser));
         return promise;
     }
     constructor() {
@@ -133,16 +127,13 @@ class Parser extends DefaultSerializeable {
     }
     setOptions(options) {
         this.options = options;
-        return this.proxy.createUpdateNativeInstance();
+        return this._context.update();
     }
     parseString(data) {
         return this.proxy.parseString(data);
     }
     parseRawData(data) {
         return this.proxy.parseRawData(data);
-    }
-    dispose() {
-        this.proxy.disposeParser();
     }
 }
 __decorate([
