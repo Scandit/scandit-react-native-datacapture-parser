@@ -19,4 +19,14 @@ RCT_EXTERN_METHOD(parseRawData
                   : (NSString *)data resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(createUpdateNativeInstance
+                  : (NSString *)parserJson resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(disposeParser
+                  : (NSString *)parserId resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
 @end
