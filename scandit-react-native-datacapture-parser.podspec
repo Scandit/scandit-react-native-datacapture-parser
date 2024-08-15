@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "scandit-react-native-datacapture-core", "= #{version}"
-  s.dependency "scandit-datacapture-frameworks-parser", '= 6.25.2'
+  s.dependency "scandit-datacapture-frameworks-parser", '= 6.26.0'
 end
 

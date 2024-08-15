@@ -1,6 +1,28 @@
 import { nameForSerialization, DefaultSerializeable, ignoreFromSerialization } from 'scandit-react-native-datacapture-core/dist/core';
 import { NativeModules } from 'react-native';
 
+class ParserIssue {
+    _code;
+    get code() {
+        return this._code;
+    }
+    _message;
+    get message() {
+        return this._message;
+    }
+    _additionalInfo;
+    get additionalInfo() {
+        return this._additionalInfo;
+    }
+    static fromJSON(json) {
+        const issue = new ParserIssue();
+        issue._code = json.code;
+        issue._message = json.message;
+        issue._additionalInfo = json.additionalInfo;
+        return issue;
+    }
+}
+
 class ParsedField {
     _name;
     get name() {
@@ -18,12 +40,17 @@ class ParsedField {
     get issues() {
         return this._issues;
     }
+    _warnings;
+    get warnings() {
+        return this._warnings;
+    }
     static fromJSON(json) {
         const field = new ParsedField();
         field._name = json.name;
         field._parsed = json.parsed;
         field._rawString = json.rawString;
         field._issues = json.issues || [];
+        field._warnings = json.warnings?.map(e => ParserIssue.fromJSON(e)) || [];
         return field;
     }
 }
@@ -41,6 +68,10 @@ class ParsedData {
     get fieldsByName() {
         return this._fieldsByName;
     }
+    _fieldsWithIssues;
+    get fieldsWithIssues() {
+        return this._fieldsWithIssues;
+    }
     static fromJSON(json) {
         const data = new ParsedData();
         data._jsonString = JSON.stringify(json);
@@ -49,6 +80,7 @@ class ParsedData {
             fieldsByName[field.name] = field;
             return fieldsByName;
         }, {});
+        data._fieldsWithIssues = data._fields.filter(e => e.warnings.length > 0);
         return data;
     }
 }
@@ -176,6 +208,39 @@ var ParserDataFormat;
      * Use ID Capture instead.
      */
     ParserDataFormat["UsUsid"] = "usUsid";
+    ParserDataFormat["IataBcbp"] = "iataBcbp";
+    ParserDataFormat["Gs1DigitalLink"] = "gs1DigitalLink";
 })(ParserDataFormat || (ParserDataFormat = {}));
 
-export { ParsedData, ParsedField, Parser, ParserDataFormat };
+var ParserIssueAdditionalInfoKey;
+(function (ParserIssueAdditionalInfoKey) {
+    ParserIssueAdditionalInfoKey["StartingCharacters"] = "startingCharacters";
+    ParserIssueAdditionalInfoKey["Version"] = "version";
+    ParserIssueAdditionalInfoKey["MinimalVersion"] = "minimalVersion";
+    ParserIssueAdditionalInfoKey["ElementName"] = "elementName";
+    ParserIssueAdditionalInfoKey["String"] = "string";
+    ParserIssueAdditionalInfoKey["Length"] = "length";
+    ParserIssueAdditionalInfoKey["Charset"] = "charset";
+})(ParserIssueAdditionalInfoKey || (ParserIssueAdditionalInfoKey = {}));
+
+var ParserIssueCode;
+(function (ParserIssueCode) {
+    ParserIssueCode["None"] = "none";
+    ParserIssueCode["Unspecified"] = "unspecified";
+    ParserIssueCode["MandatoryEpdMissing"] = "mandatoryEpdMissing";
+    ParserIssueCode["InvalidDate"] = "invalidDate";
+    ParserIssueCode["StringTooShort"] = "stringTooShort";
+    ParserIssueCode["WrongStartingCharacters"] = "wrongStartingCharacters";
+    ParserIssueCode["InvalidSeparationBetweenElements"] = "invalidSeparationBetweenElements";
+    ParserIssueCode["UnsupportedVersion"] = "unsupportedVersion";
+    ParserIssueCode["IncompleteCode"] = "incompleteCode";
+    ParserIssueCode["EmptyElementContent"] = "emptyElementContent";
+    ParserIssueCode["InvalidElementLength"] = "invalidElementLength";
+    ParserIssueCode["TooLongElement"] = "tooLongElement";
+    ParserIssueCode["NonEmptyElementContent"] = "nonEmptyElementContent";
+    ParserIssueCode["InvalidCharsetInElement"] = "invalidCharsetInElement";
+    ParserIssueCode["TooManyAltPmtFields"] = "tooManyAltPmtFields";
+    ParserIssueCode["CannotContainSpaces"] = "cannotContainSpaces";
+})(ParserIssueCode || (ParserIssueCode = {}));
+
+export { ParsedData, ParsedField, Parser, ParserDataFormat, ParserIssue, ParserIssueAdditionalInfoKey, ParserIssueCode };
