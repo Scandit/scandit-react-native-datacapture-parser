@@ -4,7 +4,6 @@ export interface ParsedFieldJSON {
     name: string;
     parsed: any;
     rawString: string;
-    issues?: string[];
     warnings?: ParserIssueJSON[];
 }
 export interface PrivateParsedField {
