@@ -36,10 +36,6 @@ class ParsedField {
     get rawString() {
         return this._rawString;
     }
-    _issues;
-    get issues() {
-        return this._issues;
-    }
     _warnings;
     get warnings() {
         return this._warnings;
@@ -49,7 +45,6 @@ class ParsedField {
         field._name = json.name;
         field._parsed = json.parsed;
         field._rawString = json.rawString;
-        field._issues = json.issues || [];
         field._warnings = json.warnings?.map(e => ParserIssue.fromJSON(e)) || [];
         return field;
     }
@@ -99,7 +94,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol */
+/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
 
 
 function __decorate(decorators, target, key, desc) {
@@ -129,11 +124,11 @@ class ParserProxy {
     }
     parseString(data) {
         return NativeModule.parseString(this.parser.id, data)
-            .then((parsedData) => ParsedData.fromJSON(JSON.parse(parsedData)));
+            .then((result) => ParsedData.fromJSON(JSON.parse(result.data)));
     }
     parseRawData(data) {
         return NativeModule.parseRawData(this.parser.id, data)
-            .then((parsedData) => ParsedData.fromJSON(JSON.parse(parsedData)));
+            .then((result) => ParsedData.fromJSON(JSON.parse(result.data)));
     }
     createUpdateNativeInstance() {
         return NativeModule.createUpdateNativeInstance(JSON.stringify(this.parser.toJSON()));
@@ -151,9 +146,8 @@ class Parser extends DefaultSerializeable {
     get id() {
         return this._id;
     }
-    _context;
     proxy;
-    static forContextAndFormat(context, dataFormat) {
+    static create(dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
         const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
@@ -182,34 +176,16 @@ __decorate([
 ], Parser.prototype, "_id", void 0);
 __decorate([
     ignoreFromSerialization
-], Parser.prototype, "_context", void 0);
-__decorate([
-    ignoreFromSerialization
 ], Parser.prototype, "proxy", void 0);
 
 var ParserDataFormat;
 (function (ParserDataFormat) {
     ParserDataFormat["GS1AI"] = "gs1ai";
     ParserDataFormat["HIBC"] = "hibc";
-    /**
-     * @deprecated ParserDataFormat.DLID
-     * Use ID Capture instead.
-     */
-    ParserDataFormat["DLID"] = "dlid";
-    /**
-     * @deprecated ParserDataFormat.MRTD
-     * Use ID Capture instead.
-     */
-    ParserDataFormat["MRTD"] = "mrtd";
-    ParserDataFormat["SwissQR"] = "swissQr";
+    ParserDataFormat["SwissQR"] = "swissqr";
     ParserDataFormat["VIN"] = "vin";
-    /**
-     * @deprecated ParserDataFormat.UsUsid
-     * Use ID Capture instead.
-     */
-    ParserDataFormat["UsUsid"] = "usUsid";
-    ParserDataFormat["IataBcbp"] = "iataBcbp";
-    ParserDataFormat["Gs1DigitalLink"] = "gs1DigitalLink";
+    ParserDataFormat["IataBcbp"] = "iata_bcbp";
+    ParserDataFormat["Gs1DigitalLink"] = "gs1_digital_link";
 })(ParserDataFormat || (ParserDataFormat = {}));
 
 var ParserIssueAdditionalInfoKey;
