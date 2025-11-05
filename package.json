@@ -1,6 +1,6 @@
 {
   "name": "scandit-react-native-datacapture-parser",
-  "version": "7.2.5",
+  "version": "7.6.4",
   "description": "Scandit Data Capture SDK for React Native",
   "homepage": "https://github.com/Scandit/scandit-react-native-datacapture-parser",
   "main": "dist/index.js",
@@ -36,7 +36,7 @@
     "rollup-plugin-modify": "3.0.0"
   },
   "dependencies": {
-    "scandit-react-native-datacapture-core": "7.2.5",
-    "scandit-datacapture-frameworks-core": "7.2.5"
+    "scandit-react-native-datacapture-core": "7.6.4",
+    "scandit-datacapture-frameworks-core": "7.6.4"
   }
 }
