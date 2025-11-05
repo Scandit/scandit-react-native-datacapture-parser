@@ -94,7 +94,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __decorate(decorators, target, key, desc) {
@@ -146,8 +146,9 @@ class Parser extends DefaultSerializeable {
     get id() {
         return this._id;
     }
+    _context;
     proxy;
-    static create(dataFormat) {
+    static forContextAndFormat(context, dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
         const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
@@ -174,6 +175,9 @@ class Parser extends DefaultSerializeable {
 __decorate([
     nameForSerialization('id')
 ], Parser.prototype, "_id", void 0);
+__decorate([
+    ignoreFromSerialization
+], Parser.prototype, "_context", void 0);
 __decorate([
     ignoreFromSerialization
 ], Parser.prototype, "proxy", void 0);
