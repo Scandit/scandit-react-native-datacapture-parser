@@ -80,7 +80,7 @@ class ParsedData {
     }
 }
 
-/*! *****************************************************************************
+/******************************************************************************
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -94,7 +94,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __decorate(decorators, target, key, desc) {
@@ -103,6 +103,11 @@ function __decorate(decorators, target, key, desc) {
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 // tslint:disable:variable-name
 const NativeModule = NativeModules.ScanditDataCaptureParser;
@@ -143,15 +148,6 @@ class Parser extends DefaultSerializeable {
     }
     _context;
     proxy;
-    static create(dataFormat) {
-        const parser = new Parser();
-        parser.dataFormat = dataFormat;
-        const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
-        return promise;
-    }
-    /**
-     * @deprecated Use Parser.create(dataFormat) instead.
-     */
     static forContextAndFormat(context, dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
