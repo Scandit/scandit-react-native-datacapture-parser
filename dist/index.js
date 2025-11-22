@@ -143,15 +143,6 @@ class Parser extends DefaultSerializeable {
     }
     _context;
     proxy;
-    static create(dataFormat) {
-        const parser = new Parser();
-        parser.dataFormat = dataFormat;
-        const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
-        return promise;
-    }
-    /**
-     * @deprecated Use Parser.create(dataFormat) instead.
-     */
     static forContextAndFormat(context, dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
