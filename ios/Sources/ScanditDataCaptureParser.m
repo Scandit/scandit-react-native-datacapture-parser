@@ -9,22 +9,24 @@
 
 @interface RCT_EXTERN_MODULE (ScanditDataCaptureParser, RCTEventEmitter)
 RCT_EXTERN_METHOD(parseString
-                  : (NSDictionary *)data resolver
+                  : (NSString *)identifier data
+                  : (NSString *)data resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(parseRawData
-                  : (NSDictionary *)data resolver
+                  : (NSString *)identifier rawData
+                  : (NSString *)data resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(createUpdateNativeInstance
-                  : (NSDictionary *)data resolver
+                  : (NSString *)parserJson resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(disposeParser
-                  : (NSDictionary *)data resolver
+                  : (NSString *)parserId resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 @end
