@@ -11,28 +11,20 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.module.annotations.ReactModule
-import com.scandit.datacapture.frameworks.core.CoreModule
-import com.scandit.datacapture.frameworks.core.FrameworkModule
-import com.scandit.datacapture.frameworks.core.locator.ServiceLocator
 import com.scandit.datacapture.frameworks.parser.ParserModule
-import com.scandit.datacapture.reactnative.core.utils.ReactNativeMethodCall
 import com.scandit.datacapture.reactnative.core.utils.ReactNativeResult
 
-@ReactModule(name = ScanditDataCaptureParserModule.NAME)
-open class ScanditDataCaptureParserModule(
-    reactContext: ReactApplicationContext,
-    private val parserModule: ParserModule,
-    private val serviceLocator: ServiceLocator<FrameworkModule>,
-) : ReactContextBaseJavaModule(reactContext) {
+typealias Base64String = String
 
+class ScanditDataCaptureParserModule(
+    reactContext: ReactApplicationContext,
+    private val parserModule: ParserModule
+) : ReactContextBaseJavaModule(reactContext) {
     companion object {
-        const val NAME = "ScanditDataCaptureParser"
         private const val DEFAULTS_KEY = "Defaults"
     }
 
-    override fun getName(): String = NAME
+    override fun getName(): String = "ScanditDataCaptureParser"
 
     override fun getConstants(): MutableMap<String, Any> = mutableMapOf(
         DEFAULTS_KEY to Arguments.createMap()
@@ -44,35 +36,22 @@ open class ScanditDataCaptureParserModule(
     }
 
     @ReactMethod
-    fun executeParser(data: ReadableMap, promise: Promise) {
-        val coreModule = serviceLocator.resolve(
-            CoreModule::class.java.simpleName
-        ) as? CoreModule ?: return run {
-            promise.reject("-1", "Unable to retrieve the CoreModule from the locator.")
-        }
-
-        val result = coreModule.execute(
-            ReactNativeMethodCall(data),
-            ReactNativeResult(promise),
-            parserModule
-        )
-
-        if (!result) {
-            val methodName = data.getString("methodName") ?: "unknown"
-            promise.reject(
-                "METHOD_NOT_FOUND",
-                "Unknown Core method: $methodName"
-            )
-        }
+    fun parseString(parserId: String, data: String, promise: Promise) {
+        parserModule.parseString(parserId, data, ReactNativeResult(promise))
     }
 
     @ReactMethod
-    fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String?) {
-        // Keep: Required for RN built in Event Emitter Calls.
+    fun parseRawData(parserId: String, data: Base64String, promise: Promise) {
+        parserModule.parseRawData(parserId, data, ReactNativeResult(promise))
     }
 
     @ReactMethod
-    fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Int?) {
-        // Keep: Required for RN built in Event Emitter Calls.
+    fun createUpdateNativeInstance(parserJson: String, promise: Promise) {
+        parserModule.createOrUpdateParser(parserJson, ReactNativeResult(promise))
+    }
+
+    @ReactMethod
+    fun disposeParser(parserId: String, promise: Promise) {
+        parserModule.disposeParser(parserId, ReactNativeResult(promise))
     }
 }
