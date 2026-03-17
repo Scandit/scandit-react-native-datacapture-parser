@@ -11,10 +11,10 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReadableMap
-import com.scandit.datacapture.frameworks.core.errors.ParameterNullError
 import com.scandit.datacapture.frameworks.parser.ParserModule
 import com.scandit.datacapture.reactnative.core.utils.ReactNativeResult
+
+typealias Base64String = String
 
 class ScanditDataCaptureParserModule(
     reactContext: ReactApplicationContext,
@@ -36,36 +36,22 @@ class ScanditDataCaptureParserModule(
     }
 
     @ReactMethod
-    fun parseString(readableMap: ReadableMap, promise: Promise) {
-        val parserId = readableMap.getString("parserId")
-            ?: return promise.reject(ParameterNullError("parserId"))
-        val data = readableMap.getString("data")
-            ?: return promise.reject(ParameterNullError("data"))
-
+    fun parseString(parserId: String, data: String, promise: Promise) {
         parserModule.parseString(parserId, data, ReactNativeResult(promise))
     }
 
     @ReactMethod
-    fun parseRawData(readableMap: ReadableMap, promise: Promise) {
-        val parserId = readableMap.getString("parserId")
-            ?: return promise.reject(ParameterNullError("parserId"))
-        val data = readableMap.getString("data")
-            ?: return promise.reject(ParameterNullError("data"))
-
+    fun parseRawData(parserId: String, data: Base64String, promise: Promise) {
         parserModule.parseRawData(parserId, data, ReactNativeResult(promise))
     }
 
     @ReactMethod
-    fun createUpdateNativeInstance(readableMap: ReadableMap, promise: Promise) {
-        val parserJson = readableMap.getString("parserJson")
-            ?: return promise.reject(ParameterNullError("parserJson"))
+    fun createUpdateNativeInstance(parserJson: String, promise: Promise) {
         parserModule.createOrUpdateParser(parserJson, ReactNativeResult(promise))
     }
 
     @ReactMethod
-    fun disposeParser(readableMap: ReadableMap, promise: Promise) {
-        val parserId = readableMap.getString("parserId")
-            ?: return promise.reject(ParameterNullError("parserId"))
+    fun disposeParser(parserId: String, promise: Promise) {
         parserModule.disposeParser(parserId, ReactNativeResult(promise))
     }
 
