@@ -36,6 +36,10 @@ class ParsedField {
     get rawString() {
         return this._rawString;
     }
+    _issues;
+    get issues() {
+        return this._issues;
+    }
     _warnings;
     get warnings() {
         return this._warnings;
@@ -45,6 +49,7 @@ class ParsedField {
         field._name = json.name;
         field._parsed = json.parsed;
         field._rawString = json.rawString;
+        field._issues = json.issues || [];
         field._warnings = json.warnings?.map(e => ParserIssue.fromJSON(e)) || [];
         return field;
     }
@@ -80,7 +85,7 @@ class ParsedData {
     }
 }
 
-/*! *****************************************************************************
+/******************************************************************************
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -94,7 +99,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 
 function __decorate(decorators, target, key, desc) {
@@ -103,6 +108,11 @@ function __decorate(decorators, target, key, desc) {
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 // tslint:disable:variable-name
 const NativeModule = NativeModules.ScanditDataCaptureParser;
@@ -119,11 +129,11 @@ class ParserProxy {
     }
     parseString(data) {
         return NativeModule.parseString(this.parser.id, data)
-            .then((result) => ParsedData.fromJSON(JSON.parse(result.data)));
+            .then((parsedData) => ParsedData.fromJSON(JSON.parse(parsedData)));
     }
     parseRawData(data) {
         return NativeModule.parseRawData(this.parser.id, data)
-            .then((result) => ParsedData.fromJSON(JSON.parse(result.data)));
+            .then((parsedData) => ParsedData.fromJSON(JSON.parse(parsedData)));
     }
     createUpdateNativeInstance() {
         return NativeModule.createUpdateNativeInstance(JSON.stringify(this.parser.toJSON()));
@@ -143,15 +153,6 @@ class Parser extends DefaultSerializeable {
     }
     _context;
     proxy;
-    static create(dataFormat) {
-        const parser = new Parser();
-        parser.dataFormat = dataFormat;
-        const promise = parser.proxy.createUpdateNativeInstance().then(() => Promise.resolve(parser));
-        return promise;
-    }
-    /**
-     * @deprecated Use Parser.create(dataFormat) instead.
-     */
     static forContextAndFormat(context, dataFormat) {
         const parser = new Parser();
         parser.dataFormat = dataFormat;
@@ -190,10 +191,25 @@ var ParserDataFormat;
 (function (ParserDataFormat) {
     ParserDataFormat["GS1AI"] = "gs1ai";
     ParserDataFormat["HIBC"] = "hibc";
-    ParserDataFormat["SwissQR"] = "swissqr";
+    /**
+     * @deprecated ParserDataFormat.DLID
+     * Use ID Capture instead.
+     */
+    ParserDataFormat["DLID"] = "dlid";
+    /**
+     * @deprecated ParserDataFormat.MRTD
+     * Use ID Capture instead.
+     */
+    ParserDataFormat["MRTD"] = "mrtd";
+    ParserDataFormat["SwissQR"] = "swissQr";
     ParserDataFormat["VIN"] = "vin";
-    ParserDataFormat["IataBcbp"] = "iata_bcbp";
-    ParserDataFormat["Gs1DigitalLink"] = "gs1_digital_link";
+    /**
+     * @deprecated ParserDataFormat.UsUsid
+     * Use ID Capture instead.
+     */
+    ParserDataFormat["UsUsid"] = "usUsid";
+    ParserDataFormat["IataBcbp"] = "iataBcbp";
+    ParserDataFormat["Gs1DigitalLink"] = "gs1DigitalLink";
 })(ParserDataFormat || (ParserDataFormat = {}));
 
 var ParserIssueAdditionalInfoKey;
