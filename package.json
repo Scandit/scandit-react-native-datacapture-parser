@@ -1,16 +1,16 @@
 {
   "name": "scandit-react-native-datacapture-parser",
-  "version": "8.4.0",
+  "version": "8.1.5",
   "description": "Scandit Data Capture SDK for React Native",
   "homepage": "https://github.com/Scandit/scandit-react-native-datacapture-parser",
   "main": "dist/index.js",
   "types": "dist/dts/index.d.ts",
-  "flow": "dist/index.js.flow",
   "scripts": {
-    "build": "rollup -c ../../rollup.config.js --bundleConfigAsCjs",
-    "generate-flow": "flowgen dist/dts/index.d.ts -o dist/index.js.flow",
     "test": "pnpm run lint",
-    "lint": "eslint ts"
+    "lint": "eslint --debug ts",
+    "build": "pnpm run rollup",
+    "rollup": "rollup -c rollup.config.js --bundleConfigAsCjs",
+    "start": "pnpm build -- --watch"
   },
   "keywords": [
     "scandit",
@@ -31,28 +31,12 @@
     "@rollup/plugin-node-resolve": "15.2.1",
     "@rollup/plugin-typescript": "11.1.3",
     "@rollup/plugin-commonjs": "25.0.4",
-    "flowgen": "^1.21.0"
+    "rollup-plugin-modify": "3.0.0"
   },
   "dependencies": {
-    "scandit-react-native-datacapture-core": "8.4.0",
-    "scandit-datacapture-frameworks-core": "8.4.0",
-    "scandit-datacapture-frameworks-parser": "8.4.0"
+    "scandit-react-native-datacapture-core": "8.1.5",
+    "scandit-datacapture-frameworks-core": "8.1.5",
+    "scandit-datacapture-frameworks-parser": "8.1.5"
   },
-  "packageManager": "pnpm@10.15.0",
-  "codegenConfig": {
-    "name": "ScanditReactNativeDatacaptureParserSpec",
-    "type": "modules",
-    "jsSrcsDir": "specs",
-    "outputDir": {
-      "ios": "ios/generated",
-      "android": "android/generated"
-    },
-    "includesGeneratedCode": true,
-    "android": {
-      "javaPackageName": "com.scandit.datacapture.reactnative.parser"
-    },
-    "ios": {
-      "unstableRequiresMainQueueSetup": true
-    }
-  }
+  "packageManager": "pnpm@10.15.0"
 }
