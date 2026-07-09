@@ -1,5 +1,5 @@
-import { TurboModule, TurboModuleRegistry} from 'react-native';
-import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
+import { TurboModule, TurboModuleRegistry } from 'react-native';
+import type { EventEmitter } from 'react-native/Libraries/Types/CodegenTypes';
 
 /**
  * Unified event payload for all Scandit events.
@@ -13,7 +13,7 @@ export type ScanditEventPayload = {
 };
 
 export interface Spec extends TurboModule {
-    // Events - unified event emitter for all Barcode events
+  // Events - unified event emitter for all Barcode events
   readonly onScanditEvent: EventEmitter<ScanditEventPayload>;
   readonly getConstants: () => {
     // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
