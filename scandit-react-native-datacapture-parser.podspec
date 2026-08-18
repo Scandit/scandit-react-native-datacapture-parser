@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.header_dir              = "ScanditDataCaptureParser"
 
   s.dependency "scandit-react-native-datacapture-core", "= #{version}"
-  s.dependency "scandit-datacapture-frameworks-parser", '= 8.5.2'
+  s.dependency "scandit-datacapture-frameworks-parser", '= 8.5.3'
 
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
