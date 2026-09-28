@@ -6,70 +6,87 @@
 
 import React
 import ScanditDataCaptureCore
+import ScanditFrameworksCore
 import ScanditFrameworksParser
 
-@objc(ScanditDataCaptureParser)
-class ScanditDataCaptureParser: RCTEventEmitter {
-    var parserModule: ParserModule
+/// Swift implementation for the Parser native module.
+/// This class contains all business logic and is used by the Obj-C++ adapter (NativeScanditDataCaptureParser).
+/// Following the Adapter Pattern from React Native's TurboModule Swift guide.
+@objcMembers
+public class ScanditDataCaptureParserImpl: NSObject {
+    var parserModule: ParserModule!
 
-    override init() {
-        parserModule = ParserModule()
+    /// Reference to the RCTEventEmitter adapter.
+    weak var emitter: RCTEventEmitter?
+
+    public override init() {
         super.init()
+    }
+
+    /// Called by the Obj-C++ adapter to set up the emitter reference and initialize modules.
+    public func setup(with emitter: RCTEventEmitter) {
+        self.emitter = emitter
+        initializeModules()
+    }
+
+    /// Called by the Obj-C++ adapter to set up the emitter reference and initialize modules (new architecture).
+    /// - Parameters:
+    ///   - emitter: The RCTEventEmitter (nil in new arch since we don't inherit from RCTEventEmitter).
+    ///   - turboEmitter: TurboModule emitter block for new architecture.
+    @objc(setupWith:turboEmitter:)
+    public func setup(with emitter: RCTEventEmitter?, turboEmitter: SDCEventEmitBlock?) {
+        self.emitter = emitter
+        guard
+            let reactEmitter = ScanditDataCaptureCore.ReactNativeEmitterFactory.create(
+                emitter: emitter,
+                turboEmitter: turboEmitter
+            )
+        else {
+            fatalError("Failed to create ReactNativeEmitter")
+        }
+        initializeModules()
+    }
+
+    private func initializeModules() {
+        // Note: ParserModule doesn't emit events
+        parserModule = ParserModule()
         parserModule.didStart()
+
     }
 
-    @objc override class func requiresMainQueueSetup() -> Bool {
-        return true
+    public func supportedEvents() -> [String] {
+        []
     }
 
-    @objc override var methodQueue: DispatchQueue! {
-        return sdcSharedMethodQueue
+    public func getConstants() -> [AnyHashable: Any] {
+        [:]
     }
 
-    override func supportedEvents() -> [String]! {
-        return []
+    public func executeParser(
+        data: [String: Any],
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        let coreModuleName = String(describing: CoreModule.self)
+        guard let coreModule = DefaultServiceLocator.shared.resolve(clazzName: coreModuleName) as? CoreModule else {
+            reject("-1", "Unable to retrieve the CoreModule from the locator.", nil)
+            return
+        }
+
+        let result = ReactNativeResult(resolve, reject)
+        let handled = coreModule.execute(
+            ReactNativeMethodCall(data),
+            result: result,
+            module: parserModule
+        )
+
+        if !handled {
+            let methodName = data["methodName"] as? String ?? "unknown"
+            reject("METHOD_NOT_FOUND", "Unknown Core method: \(methodName)", nil)
+        }
     }
 
-    override func constantsToExport() -> [AnyHashable: Any]! {
-        return [:]
-    }
-
-    @objc(parseString:data:resolver:rejecter:)
-    func parseString(id: String,
-                     data: String,
-                     resolve: @escaping RCTPromiseResolveBlock,
-                     reject: @escaping RCTPromiseRejectBlock) {
-        parserModule.parse(string: data, id: id, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc(parseRawData:rawData:resolver:rejecter:)
-    func parseRawData(id: String,
-                      rawData: String,
-                      resolve: @escaping RCTPromiseResolveBlock,
-                      reject: @escaping RCTPromiseRejectBlock) {
-        parserModule.parse(data: rawData, id: id, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc(createUpdateNativeInstance:resolver:rejecter:)
-    func createUpdateNativeInstance(parserJson: String,
-                      resolve: @escaping RCTPromiseResolveBlock,
-                      reject: @escaping RCTPromiseRejectBlock) {
-        parserModule.createOrUpdateParser(parserJson: parserJson, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc(disposeParser:resolver:rejecter:)
-    func disposeParser(parserId: String,
-                      resolve: @escaping RCTPromiseResolveBlock,
-                      reject: @escaping RCTPromiseRejectBlock) {
-        parserModule.disposeParser(parserId: parserId, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc override func invalidate() {
+    public func invalidate() {
         parserModule.didStop()
-        super.invalidate()
-    }
-
-    deinit {
-        invalidate()
     }
 }
