@@ -4,10 +4,12 @@
  * Flowgen v1.21.0
  */
 
-declare export { ParsedData } from "scandit-datacapture-frameworks-parser";
-declare export { ParsedField } from "scandit-datacapture-frameworks-parser";
-declare export { Parser } from "scandit-datacapture-frameworks-parser";
-declare export { ParserDataFormat } from "scandit-datacapture-frameworks-parser";
-declare export { ParserIssue } from "scandit-datacapture-frameworks-parser";
-declare export { ParserIssueAdditionalInfoKey } from "scandit-datacapture-frameworks-parser";
-declare export { ParserIssueCode } from "scandit-datacapture-frameworks-parser";
+declare export {
+  ParsedData,
+  ParsedField,
+  Parser,
+  ParserDataFormat,
+  ParserIssue,
+  ParserIssueAdditionalInfoKey,
+  ParserIssueCode,
+} from "./parser";
