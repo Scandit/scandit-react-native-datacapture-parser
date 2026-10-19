@@ -9,98 +9,84 @@ import ScanditDataCaptureCore
 import ScanditFrameworksCore
 import ScanditFrameworksParser
 
-@objc(ScanditDataCaptureParser)
-class ScanditDataCaptureParser: RCTEventEmitter {
-    var parserModule: ParserModule
+/// Swift implementation for the Parser native module.
+/// This class contains all business logic and is used by the Obj-C++ adapter (NativeScanditDataCaptureParser).
+/// Following the Adapter Pattern from React Native's TurboModule Swift guide.
+@objcMembers
+public class ScanditDataCaptureParserImpl: NSObject {
+    var parserModule: ParserModule!
 
-    override init() {
-        parserModule = ParserModule()
+    /// Reference to the RCTEventEmitter adapter.
+    weak var emitter: RCTEventEmitter?
+
+    public override init() {
         super.init()
+    }
+
+    /// Called by the Obj-C++ adapter to set up the emitter reference and initialize modules.
+    public func setup(with emitter: RCTEventEmitter) {
+        self.emitter = emitter
+        initializeModules()
+    }
+
+    /// Called by the Obj-C++ adapter to set up the emitter reference and initialize modules (new architecture).
+    /// - Parameters:
+    ///   - emitter: The RCTEventEmitter (nil in new arch since we don't inherit from RCTEventEmitter).
+    ///   - turboEmitter: TurboModule emitter block for new architecture.
+    @objc(setupWith:turboEmitter:)
+    public func setup(with emitter: RCTEventEmitter?, turboEmitter: SDCEventEmitBlock?) {
+        self.emitter = emitter
+        guard
+            let reactEmitter = ScanditDataCaptureCore.ReactNativeEmitterFactory.create(
+                emitter: emitter,
+                turboEmitter: turboEmitter
+            )
+        else {
+            fatalError("Failed to create ReactNativeEmitter")
+        }
+        initializeModules()
+    }
+
+    private func initializeModules() {
+        // Note: ParserModule doesn't emit events
+        parserModule = ParserModule()
         parserModule.didStart()
+
     }
 
-    @objc override class func requiresMainQueueSetup() -> Bool {
-        true
-    }
-
-    @objc override var methodQueue: DispatchQueue! {
-        sdcSharedMethodQueue
-    }
-
-    override func supportedEvents() -> [String]! {
+    public func supportedEvents() -> [String] {
         []
     }
 
-    override func constantsToExport() -> [AnyHashable: Any]! {
+    public func getConstants() -> [AnyHashable: Any] {
         [:]
     }
 
-    @objc(parseString:resolver:rejecter:)
-    func parseString(
-        _ data: [String: Any],
+    public func executeParser(
+        data: [String: Any],
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
-        guard let stringToParse = data["data"] as? String else {
-            reject("-1", "Missing data field", nil)
+        let coreModuleName = String(describing: CoreModule.self)
+        guard let coreModule = DefaultServiceLocator.shared.resolve(clazzName: coreModuleName) as? CoreModule else {
+            reject("-1", "Unable to retrieve the CoreModule from the locator.", nil)
             return
         }
-        guard let parserId = data["parserId"] as? String else {
-            reject("-1", "Missing parserId field", nil)
-            return
+
+        let result = ReactNativeResult(resolve, reject)
+        let handled = coreModule.execute(
+            ReactNativeMethodCall(data),
+            result: result,
+            module: parserModule
+        )
+
+        if !handled {
+            let methodName = data["methodName"] as? String ?? "unknown"
+            reject("METHOD_NOT_FOUND", "Unknown Core method: \(methodName)", nil)
         }
-        parserModule.parse(string: stringToParse, id: parserId, result: ReactNativeResult(resolve, reject))
     }
 
-    @objc(parseRawData:resolver:rejecter:)
-    func parseRawData(
-        _ data: [String: Any],
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
-    ) {
-        guard let rawData = data["data"] as? String else {
-            reject("-1", "Missing data field", nil)
-            return
-        }
-        guard let parserId = data["parserId"] as? String else {
-            reject("-1", "Missing parserId field", nil)
-            return
-        }
-        parserModule.parse(data: rawData, id: parserId, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc(createUpdateNativeInstance:resolver:rejecter:)
-    func createUpdateNativeInstance(
-        _ data: [String: Any],
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
-    ) {
-        guard let parserJson = data["parserJson"] as? String else {
-            reject("-1", "Missing parserJson field", nil)
-            return
-        }
-        parserModule.createOrUpdateParser(parserJson: parserJson, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc(disposeParser:resolver:rejecter:)
-    func disposeParser(
-        _ data: [String: Any],
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
-    ) {
-        guard let parserId = data["parserId"] as? String else {
-            reject("-1", "Missing parserId field", nil)
-            return
-        }
-        parserModule.disposeParser(parserId: parserId, result: ReactNativeResult(resolve, reject))
-    }
-
-    @objc override func invalidate() {
+    public func invalidate() {
         parserModule.didStop()
-        super.invalidate()
-    }
-
-    deinit {
-        invalidate()
     }
 }
