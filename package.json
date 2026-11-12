@@ -1,6 +1,6 @@
 {
   "name": "scandit-react-native-datacapture-parser",
-  "version": "8.7.0",
+  "version": "8.7.1",
   "description": "Scandit Data Capture SDK for React Native",
   "homepage": "https://github.com/Scandit/scandit-react-native-datacapture-parser",
   "main": "dist/index.js",
@@ -49,7 +49,7 @@
     "ts-jest": "^29.3.3"
   },
   "dependencies": {
-    "scandit-react-native-datacapture-core": "8.7.0"
+    "scandit-react-native-datacapture-core": "8.7.1"
   },
   "packageManager": "pnpm@10.15.0",
   "codegenConfig": {
