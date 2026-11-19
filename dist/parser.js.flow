@@ -9,7 +9,6 @@ import {
   DefaultSerializeable,
   DataCaptureComponent,
   BaseProxy,
-  MethodLogMetadata,
 } from "scandit-react-native-datacapture-core/dist/core";
 declare var PARSER_PROXY_TYPE_NAMES: ["ParserProxy"];
 declare type ParserProxyType = $ElementType<
@@ -23,11 +22,6 @@ declare function registerParserProxies(
   provider: ParserNativeCallerProvider
 ): void;
 
-/**
- * Keys used to retrieve additional info regarding an issue.
- * @since 6.26.0
- */
-
 declare var ParserIssueAdditionalInfoKey: {|
   +StartingCharacters: "startingCharacters", // "startingCharacters"
   +Version: "version", // "version"
@@ -37,11 +31,6 @@ declare var ParserIssueAdditionalInfoKey: {|
   +Length: "length", // "length"
   +Charset: "charset", // "charset"
 |};
-
-/**
- * Error code identifying the cause of the parser issue.
- * @since 6.26.0
- */
 
 declare var ParserIssueCode: {|
   +None: "none", // "none"
@@ -61,96 +50,28 @@ declare var ParserIssueCode: {|
   +TooManyAltPmtFields: "tooManyAltPmtFields", // "tooManyAltPmtFields"
   +CannotContainSpaces: "cannotContainSpaces", // "cannotContainSpaces"
 |};
-
-/**
- * @since 6.26.0
- */
 declare class ParserIssue {
-  /**
-   * Error code identifying the cause of the issue.
-   * @since 6.26.0
-   */
   code: $Values<typeof ParserIssueCode>;
-
-  /**
-   * English description of the error
-   * @since 6.26.0
-   */
   message: string;
-
-  /**
-   * Dictionary that provides additional info regarding the error.
-   * @since 6.26.0
-   */
   additionalInfo: {
     [key: $Values<typeof ParserIssueAdditionalInfoKey>]: string,
     ...
   };
 }
-/**
- * @since 6.5.0
- */
 declare class ParsedField {
-  /**
-   * The name of the field.
-   * @since 6.5.0
-   */
   name: string;
-
-  /**
-   * The parsed data contained in this field. Depending on the field type, this returns a `INumber`, `IDictionary` or [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) instance. Consult the field documentation for information on the type for the fields you are interested in.
-   * @since 6.5.0
-   */
   parsed: any;
-
-  /**
-   * The raw string that represents this field in the input string/data.
-   * @since 6.5.0
-   */
   rawString: string;
-
-  /**
-   * Warnings associated with this field
-   * @since 6.26.0
-   */
   warnings: ParserIssue[];
 }
-/**
- * [object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
- * @since 6.5.0
- */
 declare class ParsedData {
-  /**
-   * The result object as a serialized JSON string.
-   * @since 6.5.0
-   */
   jsonString: string;
-
-  /**
-   * The order of the fields matches the order in the original data string. The fields are data format specific. Consult the data format documentation for information on available fields.
-   * @since 6.5.0
-   */
   fields: ParsedField[];
-
-  /**
-   * Provides by-name lookup of the fields. The field names are data format specific. Consult the data format documentation for information on available fields.
-   * @since 6.5.0
-   */
   fieldsByName: {
     [key: string]: ParsedField,
   };
-
-  /**
-   * [object Object],[object Object],[object Object]
-   * @since 6.26.0
-   */
   fieldsWithIssues: ParsedField[];
 }
-/**
- * [object Object],[object Object],[object Object]
- * @since 6.5.0
- */
-
 declare var ParserDataFormat: {|
   +GS1AI: "gs1ai", // "gs1ai"
   +HIBC: "hibc", // "hibc"
@@ -159,81 +80,17 @@ declare var ParserDataFormat: {|
   +IataBcbp: "iata_bcbp", // "iata_bcbp"
   +Gs1DigitalLink: "gs1_digital_link", // "gs1_digital_link"
   +Epc: "epc", // "epc"
-  +French2dDoc: "french2ddoc", // "french2ddoc"
 |};
-
-/**
- * @since 6.5.0
- */
-declare interface Parser$1 {
-  type: "parser";
-
-  /**
-   * [object Object],[object Object],[object Object],[object Object],[object Object]
-   * @since 6.5.0
-   */
-  id?: string;
-  dataFormat:
-    | "gs1ai"
-    | "hibc"
-    | "dlid"
-    | "mrtd"
-    | "swissqr"
-    | "vin"
-    | "us_usid"
-    | "iata_bcbp"
-    | "gs1_digital_link"
-    | "epc"
-    | "french2ddoc";
-  options?: mixed;
-}
-/**
- * @since 6.5.0
- */
 declare class Parser mixins DefaultSerializeable, DataCaptureComponent {
-  /**
-   * [object Object],[object Object],[object Object],[object Object],[object Object]
-   * @since 6.5.0
-   */
   id: string;
-
-  /**
-   * Constructs a new Parser instance with the provided dataFormat.
-   * @since 7.6.0
-   */
   static create(dataFormat: $Values<typeof ParserDataFormat>): Promise<Parser>;
   constructor(): this;
-
-  /**
-   * Sets the provided options on the parser.
-   *
-   * Available options depend on the data format type of the parser and are documented for each of the supported data formats.
-   *
-   * In case the options are invalid, an exception is raised. More detailed information on why creation failed is contained in the exception error message.
-   * @since 6.5.0
-   */
   setOptions(options: {
     [key: string]: any,
   }): Promise<void>;
-
-  /**
-   * [object Object],[object Object],[object Object]
-   * @since 6.5.0
-   */
   parseString(data: string): Promise<ParsedData>;
-
-  /**
-   * [object Object],[object Object],[object Object]
-   * @since 6.5.0
-   */
   parseRawData(data: string): Promise<ParsedData>;
-
-  /**
-   * Disposes the parser.
-   * @since 6.22.0
-   */
   dispose(): void;
-  toJSON(): Parser$1;
 }
 /**
  * Parser module - structured data parsing without image input
@@ -312,21 +169,7 @@ declare class ParserProxyAdapter {
     ...
   }): Promise<void>;
 }
-/**
- * Per-method `LogRecord` level and category overrides for the ParserProxy
- * bridge surface. Consumed by the centralized `ScanditLogger` interceptor:
- * per-frame / per-scan callbacks log at `Trace` under their category label, so
- * they only show once the level is raised to `Trace`.
- *
- * Auto-registered as a side effect of importing this module via the
- * generated `index.ts` barrel — no customer wiring required.
- */
-declare var PARSER_PROXY_LOG_METADATA: {
-  [key: string]: MethodLogMetadata,
-  ...
-};
 declare export {
-  PARSER_PROXY_LOG_METADATA,
   PARSER_PROXY_TYPE_NAMES,
   ParsedData,
   ParsedField,
